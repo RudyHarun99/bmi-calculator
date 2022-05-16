@@ -112,7 +112,6 @@ class _BmiDataScreenState extends State<BmiDataScreen> {
                     children: [
                       Text('WEIGHT', style: labelTextStyle),
                       Text('$weight', style: numberStyle),
-                      const SizedBox(height: 10),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -139,7 +138,6 @@ class _BmiDataScreenState extends State<BmiDataScreen> {
                     children: [
                       Text('AGE', style: labelTextStyle),
                       Text('$age', style: numberStyle),
-                      const SizedBox(height: 10),
                       Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
