@@ -1,5 +1,7 @@
 import 'package:bmi/constants/constant.dart';
+import 'package:bmi/helpers/bmi_calculator.dart';
 import 'package:bmi/views/bmi_result_screen.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class BmiDataScreen extends StatefulWidget {
@@ -13,13 +15,25 @@ class _BmiDataScreenState extends State<BmiDataScreen> {
   int height = 100;
   int weight = 50;
   int age = 20;
-
   String? gender;
 
-  double calculateBmi() {
-    double heightInMeter = height / 100;
-    final bmi = weight / (heightInMeter * heightInMeter);
-    return bmi;
+  // double calculateBmi() {
+  //   double heightInMeter = height / 100;
+  //   final bmi = weight / (heightInMeter * heightInMeter);
+  //   return bmi;
+  // }
+
+  List<Widget> generateList(start, end) {
+    List<Widget> weigths = [];
+    for (var i = start; i < end; i++) {
+      weigths.add(
+        Text(
+          "$i",
+          style: labelTextStyle
+        ),
+      );
+    }
+    return weigths;
   }
 
   @override
@@ -29,151 +43,213 @@ class _BmiDataScreenState extends State<BmiDataScreen> {
       appBar: AppBar(
         title: const Text('BMI Calculator'),
       ),
+      bottomNavigationBar: GestureDetector(
+        onTap: () {
+          final bmiCalculator = BmiCalculator(height: height, weight: weight);
+          bmiCalculator.calculateBmi();
+
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: ((context) {
+                return BmiResultScreen(
+                  bmi: bmiCalculator.bmi!,
+                );
+              }),
+            ),
+          );
+        },
+        child: Container(
+          height: 50,
+          margin: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+              color: const Color(0xffEC3C66),
+              borderRadius: BorderRadius.circular(8)),
+          child: Center(
+            child: Text(
+              'CALCULATE YOUR BMI',
+              style: labelTextStyle!.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
               child: Row(
             children: [
               Expanded(
-                child: GestureDetector(
-                  onTap: (){
-                    gender = 'male';
-                    setState(() {});
-                  },
-                  child: BmiCard(
-                    borderColor: (gender == 'male') ? Colors.white : primaryColor,
-                    child: const GenderIconText(
-                      icon: Icons.male,
-                      title: 'Male',
-                    ),
-                  ),
-                )
-              ),
-              Expanded(
-                child: GestureDetector(
-                  onTap: (){
-                    gender = 'female';
-                    setState(() {});
-                  },
-                  child: BmiCard(
-                    borderColor: (gender == 'female') ? Colors.white : primaryColor,
-                    child: const GenderIconText(
-                      icon: Icons.female,
-                      title: 'Female',
-                    ),
-                  ),
-                )
-              ),
-            ],
-          )),
-          Expanded(
-              child: BmiCard(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'HEIGHT',
-                style: labelTextStyle.copyWith(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text('$height', style: numberStyle),
-                    Text(
-                      'cm',
-                      style: labelTextStyle,
-                    )
-                  ]),
-              Slider(
-                value: height.toDouble(),
-                min: 80,
-                max: 200,
-                thumbColor: Colors.red,
-                activeColor: Colors.white,
-                onChanged: (value) {
-                  height = value.toInt();
+                  child: GestureDetector(
+                onTap: () {
+                  gender = 'male';
                   setState(() {});
                 },
-              ),
-            ],
-          ))),
-          Expanded(
-              child: Row(
-            children: [
-              Expanded(
-                  child: BmiCard(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                child: BmiCard(
+                  borderColor: (gender == 'male') ? Colors.white : primaryColor,
+                  child: Stack(
                     children: [
-                      Text('WEIGHT', style: labelTextStyle),
-                      Text('$weight', style: numberStyle),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            PlusMinusButton(
-                                icon: Icons.add,
-                                pressed: () {
-                                  weight++;
-                                  setState(() {});
-                                }),
-                            const SizedBox(width: 10),
-                            PlusMinusButton(
-                                icon: Icons.remove,
-                                pressed: () {
-                                  weight--;
-                                  setState(() {});
-                                }),
-                          ]),
-                    ]),
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5.0),
+                          child: GenderIconText(
+                            icon: Icons.male,
+                            title: 'Male',
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: Icon(
+                          Icons.check_circle,
+                          color:
+                              (gender == "male") ? Colors.white : primaryColor,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               )),
               Expanded(
-                  child: BmiCard(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: GestureDetector(
+                onTap: () {
+                  gender = 'female';
+                  setState(() {});
+                },
+                child: BmiCard(
+                  borderColor:
+                      (gender == 'female') ? Colors.white : primaryColor,
+                  child: Stack(
                     children: [
-                      Text('AGE', style: labelTextStyle),
-                      Text('$age', style: numberStyle),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            PlusMinusButton(
-                                icon: Icons.add,
-                                pressed: () {
-                                  age++;
-                                  setState(() {});
-                                }),
-                            const SizedBox(width: 10),
-                            PlusMinusButton(
-                                icon: Icons.remove,
-                                pressed: () {
-                                  age--;
-                                  setState(() {});
-                                }),
-                          ]),
-                    ]),
+                      const Center(
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5.0),
+                          child: GenderIconText(
+                            icon: Icons.female,
+                            title: 'Female',
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        right: 10,
+                        child: Icon(
+                          Icons.check_circle,
+                          color: (gender == "female")
+                              ? Colors.white
+                              : primaryColor,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               )),
             ],
           )),
-          GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: ((context) {
-                  return BmiResultScreen(bmi: calculateBmi());
-                })),
-              );
-            },
-            child: Container(
-              height: 60,
-              color: const Color(0xffec3e66),
-              child: Center(
-                  child: Text('CALCULATE YOUR BMI', style: labelTextStyle)),
-            ),
+          Column(
+            children: [
+              Text('HEIGHT', style: labelTextStyle),
+              Row(
+                children: [
+                  Expanded(
+                    child: BmiCard(
+                      child: Slider(
+                        value: height.toDouble(),
+                        min: 80,
+                        max: 200,
+                        thumbColor: Colors.red,
+                        activeColor: Colors.white,
+                        onChanged: (value) {
+                          height = value.toInt();
+                          setState(() {});
+                        },
+                      ),
+                    ),
+                  ),
+                  BmiCard(
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            "$height",
+                            style: labelTextStyle,
+                          ),
+                          Text(
+                            "cm",
+                            style: labelTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
+          // ))),
+          Row(children: [
+            Expanded(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('WEIGHT', style: labelTextStyle),
+                  // Text('$weight', style: numberStyle),
+                  BmiCard(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.12,
+                          child: CupertinoPicker(
+                            scrollController:
+                                FixedExtentScrollController(initialItem: 30),
+                            itemExtent: 25,
+                            magnification: 2,
+                            useMagnifier: true,
+                            onSelectedItemChanged: (val) {
+                              weight = val + 20;
+                              setState(() {});
+                            },
+                            children: generateList(20, 220),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ]),
+          Expanded(
+              child: Column(children: [
+            Text('AGE', style: labelTextStyle),
+            BmiCard(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.12,
+                    child: CupertinoPicker(
+                      scrollController:
+                          FixedExtentScrollController(initialItem: 5),
+                      itemExtent: 25,
+                      magnification: 2,
+                      useMagnifier: true,
+                      onSelectedItemChanged: (val) {
+                        age = val + 15;
+                        setState(() {});
+                      },
+                      children: generateList(15, 220),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ])),
         ],
       ),
     );
@@ -247,10 +323,10 @@ class GenderIconText extends StatelessWidget {
     return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
       Icon(
         icon,
-        size: 80,
+        size: 60,
         color: Colors.white,
       ),
-      const SizedBox(height: 15),
+      // const SizedBox(height: 15),
       Text(
         title,
         style: labelTextStyle,
